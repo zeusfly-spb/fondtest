@@ -1,7 +1,9 @@
 <?php
 
+use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -14,7 +16,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 Route::post('login', 'UserController@login');
-Route::post('register', 'UserController@register');
+Route::post('register', [UserController::class, 'register']);
 
 Route::group(['middleware' => 'auth:api'], function(){
     Route::post('details', 'UserController@details');

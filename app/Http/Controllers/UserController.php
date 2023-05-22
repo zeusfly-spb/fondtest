@@ -20,6 +20,6 @@ class UserController extends Controller
             'token' => $user->createToken('MyApp')->accessToken,
             'name' => $user->name
         ];
-        return response()->json($success);
+        return $this->sendResponse($success, 'User register successfully.');
     }
 }
