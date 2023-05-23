@@ -3,28 +3,61 @@
     <notifications
       position="top center"
     />
-    <nav>
-      <router-link
-        to="/register"
-        v-show="$route.name === 'login'"
+    <div>
+      <nav
+        id="main-nav"
       >
-        Регистрация
-      </router-link>
-      <router-link
-        to="/login"
-        v-show="$route.name === 'register'"
-      >
-        Вход
-      </router-link>
-    </nav>
+        <router-link
+          to="/register"
+          v-show="$route.name === 'login'"
+        >
+          Регистрация
+        </router-link>
+        <router-link
+          to="/login"
+          v-show="$route.name === 'register'"
+        >
+          Вход
+        </router-link>
+        <a
+          v-show="authorized"
+          @click="logout"
+        >
+          Выход
+        </a>
+      </nav>
+    </div>
+
     <router-view/>
   </div>
 </template>
 
+<script>
+import { mapState, mapMutations } from 'vuex';
+export default {
+  computed: {
+    ...mapState(['authorized'])
+  },
+  methods: {
+    ...mapMutations(['AUTH_LOGOUT']),
+    logout() {
+      this.AUTH_LOGOUT();
+      this.$router.push('/login');
+    }
+  }
+}
+</script>
+
 <style>
+#main-nav {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+}
 a {
   color: white;
   text-decoration: none;
+  cursor: pointer;
 }
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
@@ -85,7 +118,4 @@ body {
     padding:50px 20px;
   }
 }
-
 </style>
-<script setup>
-</script>

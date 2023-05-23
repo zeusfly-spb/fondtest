@@ -59,12 +59,7 @@ export default {
   },
   watch: {
     authorized(val) {
-      val ? this.$router.push('/') : null;
-    }
-  },
-  beforeMount() {
-    if (this.authorized) {
-      this.$router.replace('/');
+       val ? this.$router.replace('/') : null;
     }
   }
 }

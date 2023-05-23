@@ -6,10 +6,14 @@ Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
+    user: null,
     authorized: false,
     registered: false,
   },
   mutations: {
+    SET_TOKEN(state, token) {
+      state.token = token;
+    },
     SET_AUTHORIZED(state, val) {
       state.authorized = val;
     },
@@ -17,64 +21,64 @@ export default new Vuex.Store({
       state.registered = val;
     },
     AUTH_LOGOUT (state) {
-      const clearAllTimers = function(){
-        let lastID = 0;
-        return function(){
-          let currentID = setTimeout(function(){}, 1);
-          for(let id = currentID; id > lastID; id--){
-            clearTimeout(id);
-          }
-          lastID = currentID;
-        };
-      }();
       clearAllTimers();
       Cookies.remove('fondtest-token');
       delete Vue.axios.defaults.headers.common['Authorization'];
       state.authorized = false;
     },
+    SET_USER(state, user) {
+      state.user = user;
+    }
   },
   actions: {
-    login ({ commit }, data) {
-      return new Promise ((resolve, reject) => {
-        Vue.axios.post('/api/login', {email: data.email, password: data.password})
-          .then(res => {
-            let token = res.data.success.token;
-            let now = new Date();
-            now.setMinutes(1 + now.getMinutes());
-            Cookies.set('fondtest-token', token, {expires: now, path: '/'});
-            setInterval(() => {
-              let now = new Date()
-              now.setMinutes(1 + now.getMinutes())
-              Cookies.set('fondtest-token', token, {expires: now, path: '/'})
-            }, 30000);
-            Vue.axios.defaults.headers.common['Authorization'] = 'Bearer ' + token;
-            commit('SET_AUTHORIZED', true);
-            resolve (res)
-          })
-          .catch(e => {
-            commit('AUTH_LOGOUT')
-            reject (e)
-          })
-      })
+    async details({ commit }) {
+      try {
+        const { data: { data } } = await Vue.axios.post('/api/details');
+        commit('SET_USER', data);
+      } catch (e) {
+        console.error(e);
+      }
     },
-    register ({ commit }, data) {
-      return new Promise((resolve, reject) => {
-        console.log('CREATING REGISTER');
-        Vue.axios.post('/api/register', {
-          name: data.name,
-          surname: data.surname,
-          email: data.email,
-          password: data.password,
-          password_confirmation: data.password_confirmation
-        })
-          .then(res => {
-            commit('SET_REGISTERED', true);
-            resolve(res);
-          })
-          .catch(e => {
-            reject(e);
-          })
-      })
+    async login({ commit }, credentials) {
+      try {
+        const { data: { data: { token } } } = await Vue.axios
+          .post('/api/login', { ...credentials });
+        cookieCycle(token);
+        Vue.axios.defaults.headers.common['Authorization'] = 'Bearer ' + token;
+        commit('SET_AUTHORIZED', true);
+      } catch (e) {
+        console.error(e);
+      }
+    },
+    async register({ commit }, data) {
+      try {
+        await Vue.axios.post('/api/register', { ...data });
+        commit('SET_REGISTERED', true);
+      } catch (e) {
+        console.error(e);
+      }
     }
   },
 })
+
+const clearAllTimers = function(){
+  let lastID = 0;
+  return function(){
+    let currentID = setTimeout(function(){}, 1);
+    for(let id = currentID; id > lastID; id--){
+      clearTimeout(id);
+    }
+    lastID = currentID;
+  };
+}();
+
+const cookieCycle = token => {
+  let now = new Date();
+  now.setMinutes(1 + now.getMinutes());
+  Cookies.set('fondtest-token', token, {expires: now, path: '/'});
+  setInterval(() => {
+    let now = new Date();
+    now.setMinutes(1 + now.getMinutes());
+    Cookies.set('fondtest-token', token, {expires: now, path: '/'});
+  }, 30000);
+}

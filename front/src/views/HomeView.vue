@@ -4,21 +4,17 @@
   </div>
 </template>
 <script>
-import { mapState } from 'vuex';
+import { mapState, mapActions } from 'vuex';
 export default {
   name: 'HomeView',
   computed: {
     ...mapState(['authorized'])
   },
-  watch: {
-    authorized(val) {
-      !val ? this.$router.push('/login') : null;
-    }
+  methods: {
+    ...mapActions(['details'])
   },
-  beforeMount() {
-    if (!this.authorized) {
-      this.$router.push('/login');
-    }
+  async mounted() {
+    await this.details();
   }
 }
 </script>

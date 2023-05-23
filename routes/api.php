@@ -18,6 +18,6 @@ use Illuminate\Support\Facades\Route;
 Route::post('login', [UserController::class, 'login']);
 Route::post('register', [UserController::class, 'register']);
 
-Route::group(['middleware' => 'auth:api'], function(){
-    Route::post('details', 'UserController@details');
+Route::group(['middleware' => 'auth:api'], function() {
+    Route::post('details', [UserController::class, 'details']);
 });

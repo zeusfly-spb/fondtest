@@ -61,4 +61,13 @@ class UserController extends Controller
             return $this->sendError('Unauthorised.', ['error'=>'Unauthorised']);
         }
     }
+
+    /**
+     * @return JsonResponse
+     */
+    public function details()
+    {
+        $success = Auth::user()->toArray();
+        return $this->sendResponse($success, 'Details of current user');
+    }
 }
