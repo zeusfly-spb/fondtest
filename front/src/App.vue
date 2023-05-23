@@ -1,5 +1,8 @@
 <template>
   <div id="app">
+    <notifications
+      position="top center"
+    />
     <nav>
       <router-link
         to="/register"

@@ -3,7 +3,9 @@ import App from './App.vue'
 import router from './router'
 import store from './store'
 window.Cookies = require('js-cookie')
-require('dotenv').config()
+
+import Notifications from 'vue-notification'
+Vue.use(Notifications)
 
 import axios from 'axios'
 import VueAxios from 'vue-axios'
@@ -32,7 +34,7 @@ if (token) {
     now.setMinutes(1 + now.getMinutes())
     window.Cookies.set('fondtest-token', token, {expires: now, path: '/'})
   }, 30000);
-  router.push('/home');
+  router.push('/');
 } else {
   router.push('/login');
 }

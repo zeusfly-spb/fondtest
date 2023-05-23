@@ -58,30 +58,37 @@ export default {
     password_confirmation: ''
   }),
   computed: {
-    ...mapState(['authorized'])
+    ...mapState(['registered', 'authorized'])
   },
   methods: {
     ...mapActions(['register']),
-    registerUser() {
-      this.register({
-        name: this.name,
-        surname: this.surname,
-        email: this.email,
-        password: this.password,
-        password_confirmation: this.password_confirmation
-      }).then(() => {
-        console.log('Register component done');
-      })
+    async registerUser() {
+      try {
+        await this.register({
+          name: this.name,
+          surname: this.surname,
+          email: this.email,
+          password: this.password,
+          password_confirmation: this.password_confirmation
+        });
+      } catch (e) {
+        console.error(e);
+      }
+      this.$notify({
+        title: 'Регистрация',
+        text: 'Вы успешно зарегистрировались!',
+        type: 'success',
+      });
     }
   },
   watch: {
-    authorized(val) {
-      val ? this.$router.push('/home') : null;
+    registered(val) {
+      val ? this.$router.push('/login') : null;
     }
   },
   beforeMount() {
     if (this.authorized) {
-      this.$router.push('/home')
+      this.$router.push('/');
     }
   }
 }

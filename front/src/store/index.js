@@ -7,10 +7,14 @@ Vue.use(Vuex)
 export default new Vuex.Store({
   state: {
     authorized: false,
+    registered: false,
   },
   mutations: {
     SET_AUTHORIZED(state, val) {
       state.authorized = val;
+    },
+    SET_REGISTERED(state, val) {
+      state.registered = val;
     },
     AUTH_LOGOUT (state) {
       const clearAllTimers = function(){
@@ -32,7 +36,7 @@ export default new Vuex.Store({
   actions: {
     login ({ commit }, data) {
       return new Promise ((resolve, reject) => {
-        Vue.axios.post('/api/login', {name: data.email, password: data.password})
+        Vue.axios.post('/api/login', {email: data.email, password: data.password})
           .then(res => {
             let token = res.data.success.token;
             let now = new Date();
@@ -64,8 +68,7 @@ export default new Vuex.Store({
           password_confirmation: data.password_confirmation
         })
           .then(res => {
-            console.log('SETTING AUTHORIZED');
-            commit('SET_AUTHORIZED', true)
+            commit('SET_REGISTERED', true);
             resolve(res);
           })
           .catch(e => {
